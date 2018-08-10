@@ -97,12 +97,22 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class Feed extends React.Component {
+const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
+// Component 属于泛型, 这里不需要 State Props 设置为空对象
+// Feed 组件
+class default_1 extends React.Component {
     render() {
-        return React.createElement("div", null, "this is feed");
+        return (React.createElement("div", { className: "page-content feed-index" },
+            React.createElement("div", { className: "feed-list" },
+                React.createElement(react_mdl_1.Card, { shadow: 0, style: { width: "100%", height: "auto", margin: "auto" } },
+                    React.createElement(react_mdl_1.CardTitle, { expand: true, style: { color: "#fff", backgroundColor: "#46B6AC" } }, "Title"),
+                    React.createElement(react_mdl_1.CardText, null, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lobortis, mauris quis mollis porta"),
+                    React.createElement(react_mdl_1.CardActions, { border: true },
+                        React.createElement(react_mdl_1.Button, { colored: true }, "Open")))),
+            React.createElement("div", { className: "feed-contents" })));
     }
 }
-exports.default = Feed;
+exports.default = default_1;
 
 
 /***/ }),
@@ -197,7 +207,7 @@ const Feed_1 = __webpack_require__(/*! ../components/Feed */ "./app/ts/component
 class default_1 extends React.Component {
     render() {
         return (React.createElement("div", { className: "main-wrapper" },
-            React.createElement(react_mdl_1.Layout, { fixedHeader: true, fixedDrawer: true },
+            React.createElement(react_mdl_1.Layout, { fixedHeader: true },
                 React.createElement(TitleBar_1.default, null),
                 React.createElement(Menu_1.default, null),
                 React.createElement(react_mdl_1.Content, null,
