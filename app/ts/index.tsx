@@ -1,6 +1,7 @@
 // 全局导入, 不支持按需加载
-import "react-mdl/extra/material.css";
-import "react-mdl/extra/material.js";
+import 'react-mdl/extra/material.css';
+import 'react-mdl/extra/material.js';
+import 'app.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

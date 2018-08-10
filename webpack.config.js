@@ -35,9 +35,10 @@ module.exports = {
   resolve: {
     modules: [
       'node_modules',
-      path.resolve(__dirname, 'app/ts')
+      path.resolve(__dirname, 'app/ts'),
+      path.resolve(__dirname, 'app/sass'),
     ],
-    extensions: ['.ts', '.tsx', '.js', '.css']
+    extensions: ['.ts', '.tsx', '.js', '.css', '.scss']
   },
   // html 插件
   plugins: [

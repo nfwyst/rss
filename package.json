@@ -16,11 +16,13 @@
     "@types/react": "^16.4.9",
     "@types/react-dom": "^16.0.7",
     "@types/react-mdl": "^1.7.27",
+    "@types/request": "^2.47.1",
     "css-loader": "^1.0.0",
     "electron": "^2.0.7",
     "electron-debug": "^2.0.0",
     "electron-devtools-installer": "^2.2.4",
     "html-webpack-plugin": "^4.0.0-alpha",
+    "node-sass": "^4.9.3",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.22.1",
     "ts-loader": "^4.4.2",
@@ -30,8 +32,10 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "feedme": "^1.2.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-mdl": "^1.11.0"
+    "react-mdl": "^1.11.0",
+    "request": "^2.87.0"
   }
 }
