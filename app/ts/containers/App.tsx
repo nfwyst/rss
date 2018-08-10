@@ -11,8 +11,11 @@ export default class extends React.Component<{}, {}> {
     return (
       <div className="main-wrapper">
         <Layout fixedHeader fixedDrawer>
+          {/* 头部导航 */}
           <TitleBar />
+          {/* 侧边菜单栏 */}
           <Menu />
+          {/* 主内容区域 */}
           <Content>
             <Feed />
           </Content>

@@ -118,12 +118,27 @@ exports.default = Feed;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class Menu extends React.Component {
+const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
+// Component 属于泛型, 这里不需要 State Props 设置为空对象
+// 侧边栏组件
+class default_1 extends React.Component {
     render() {
-        return React.createElement("div", null, "this is menu");
+        return (React.createElement(react_mdl_1.Drawer, { className: "mdl-color--blue-grey-900 mdl-color-text--blue-grey-50" },
+            React.createElement(react_mdl_1.Navigation, { className: "mdl-color--blue-grey-80" },
+                React.createElement("a", null,
+                    React.createElement(react_mdl_1.Icon, { name: "autorenew" }),
+                    "Link title")),
+            React.createElement("div", { className: "mdl-layout-spacer" }),
+            React.createElement("div", { className: "tools" },
+                React.createElement(react_mdl_1.FABButton, { mini: true },
+                    React.createElement(react_mdl_1.Icon, { name: "add" })),
+                React.createElement(react_mdl_1.FABButton, { mini: true },
+                    React.createElement(react_mdl_1.Icon, { name: "delete" })),
+                React.createElement(react_mdl_1.FABButton, { mini: true },
+                    React.createElement(react_mdl_1.Icon, { name: "autorenew" })))));
     }
 }
-exports.default = Menu;
+exports.default = default_1;
 
 
 /***/ }),
@@ -143,7 +158,7 @@ const electron_1 = __webpack_require__(/*! electron */ "electron");
 const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
 // Component 属于泛型, 这里不需要 State Props 设置为空对象
 // 头部组件
-class TitleBar extends React.Component {
+class default_1 extends React.Component {
     constructor() {
         super(...arguments);
         // 私有方法, 对关闭窗口进行响应
@@ -158,7 +173,7 @@ class TitleBar extends React.Component {
                     React.createElement(react_mdl_1.Icon, { name: "close" })))));
     }
 }
-exports.default = TitleBar;
+exports.default = default_1;
 
 
 /***/ }),
