@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "outDir": "../dist/",
+    "jsx": "react"
+  },
+  "files": [
+    "./app/ts/index.tsx"
+  ]
+}

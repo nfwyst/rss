@@ -1,0 +1,37 @@
+{
+  "name": "rss",
+  "title": "rss",
+  "version": "1.0.0",
+  "main": "app/main.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "start": "nodemon --watch * --exec 'electron .'",
+    "dev": "webpack -d --watch"
+  },
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/feedme": "^1.0.0",
+    "@types/node": "^10.5.7",
+    "@types/react": "^16.4.9",
+    "@types/react-dom": "^16.0.7",
+    "@types/react-mdl": "^1.7.27",
+    "css-loader": "^1.0.0",
+    "electron": "^2.0.7",
+    "electron-debug": "^2.0.0",
+    "electron-devtools-installer": "^2.2.4",
+    "html-webpack-plugin": "^4.0.0-alpha",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.22.1",
+    "ts-loader": "^4.4.2",
+    "typescript": "^3.0.1",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-mdl": "^1.11.0"
+  }
+}
