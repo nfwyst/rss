@@ -1,6 +1,6 @@
 import { TFeedMe } from '../interfaces/feedme';
 import { Feed, RssItem } from '../interfaces/rss';
-import * as request from 'request'
+import * as request from 'request';
 
 // 导入 FeedMe 并满足 TFeedMe 接口定义: new/on->title/on->item
 const FeedMe: TFeedMe = require('feedme');
