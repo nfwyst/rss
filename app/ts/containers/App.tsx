@@ -8,12 +8,12 @@ import actions from '../actions/actions';
 import { connect } from 'react-redux';
 import { TAppState, TAppActions } from '../interfaces/appState';
 import Error from '../components/Error';
-
+import { menu } from '../actions/actions';
 @connect(state => state, { ...actions })
 export default class extends React.Component<{state: TAppState} & TAppActions, {}> {
   componentDidMount() {
-    this.props.fetchMenu();
-    this.props.setFeedError('something wrong');
+    this.props.fetchMenu(0);
+    this.props.setActiveFeed(menu.items[0].url);
   }
   render() {
     return (

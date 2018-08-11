@@ -49,7 +49,6 @@ const app = handleActions<any>({
         ...state,
         menu: action.payload.menuItems,
         items: action.payload.rssItems,
-        activeFeedUrl: ""
       };
     },
 

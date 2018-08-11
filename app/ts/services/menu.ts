@@ -1,4 +1,4 @@
-import sha1 from 'sha1';
+import * as sha1 from 'sha1';
 import { MenuItem, TMenu } from '../interfaces/menu';
 
 export default class Menu implements TMenu {
@@ -26,8 +26,8 @@ export default class Menu implements TMenu {
     this.save();
     return this.items;
   }
-  load(): Array<MenuItem> {
+  load(index: number): MenuItem {
     this.items = JSON.parse(localStorage.getItem(this.ns) || '[]');
-    return this.items;
+    return this.items[index];
   }
 }

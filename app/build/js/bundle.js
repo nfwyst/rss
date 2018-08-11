@@ -138,44 +138,134 @@ const redux_actions_1 = __webpack_require__(/*! redux-actions */ "./node_modules
 const types = __webpack_require__(/*! ../contants */ "./app/ts/contants/index.ts");
 const menu_1 = __webpack_require__(/*! ../services/menu */ "./app/ts/services/menu.ts");
 const rss_1 = __webpack_require__(/*! ../services/rss */ "./app/ts/services/rss.ts");
-const menu = new menu_1.default(Symbol.keyFor(types.MENU_STORAGE_NS));
+exports.menu = new menu_1.default(Symbol.keyFor(types.MENU_STORAGE_NS));
 // action creator 集合
 const feedActions = {
     toggleOpenAddFeed: redux_actions_1.createAction(Symbol.keyFor(types.TOGGLE_ADD_FEED), (toggle) => toggle),
     setActiveFeed: redux_actions_1.createAction(Symbol.keyFor(types.SET_ACTIVE_FEED), (url) => url),
     setFeedError: redux_actions_1.createAction(Symbol.keyFor(types.SET_FEED_ERROR), (msg) => msg),
-    removeFeed: redux_actions_1.createAction(Symbol.keyFor(types.REMOVE_FEED), (url) => menu.remove(url)),
+    removeFeed: redux_actions_1.createAction(Symbol.keyFor(types.REMOVE_FEED), (url) => exports.menu.remove(url)),
     fetchFeed: redux_actions_1.createAction(Symbol.keyFor(types.FETCH_FEED), (url) => __awaiter(this, void 0, void 0, function* () { return yield rss_1.default(url); })),
     addFeed: redux_actions_1.createAction(Symbol.keyFor(types.ADD_FEED), (url) => __awaiter(this, void 0, void 0, function* () {
-        if (menu.items.find(item => item.url === url)) {
-            throw new Error("This feed is already in the list");
+        // 如果已经添加了源, 则无需再次添加
+        if (exports.menu.items.find(item => item.url === url)) {
+            return exports.menu.items;
+        }
+        console.log(localStorage.getItem('curUrl'));
+        // 如果在异步执行结束之前多次添加则无效
+        if (!localStorage.getItem('curUrl')) {
+            localStorage.setItem('curUrl', url);
+        }
+        else {
+            if (localStorage.getItem('curUrl') === url) {
+                return exports.menu.items;
+            }
         }
         const feed = yield rss_1.default(url);
         if (!feed.title) {
             throw new Error("Unsupported format");
         }
-        return menu.add(url, feed.title);
+        return exports.menu.add(url, feed.title);
     })),
-    fetchMenu: redux_actions_1.createAction(Symbol.keyFor(types.FETCH_MENU), () => __awaiter(this, void 0, void 0, function* () {
-        menu.load();
-        // fetch rss => Promise[]
-        let promises = menu.items.map(item => rss_1.default(item.url));
-        return Promise.all(promises).then((feeds) => {
-            if (!feeds.length) {
+    fetchMenu: redux_actions_1.createAction(Symbol.keyFor(types.FETCH_MENU), (index) => __awaiter(this, void 0, void 0, function* () {
+        let curMenu = exports.menu.load(index);
+        if (!curMenu || index < 0)
+            return { menuItems: [], rssItems: [] };
+        console.log(index);
+        let feed = null;
+        try {
+            feed = yield rss_1.default(curMenu.url);
+            if (!feed || !feed.items.length) {
                 return { menuItems: [], rssItems: [] };
             }
-            let all = feeds.map(feed => feed.items)
-                .reduce((acc, items) => acc.concat(items))
-                .sort((a, b) => {
+            let rssItems = feed.items.sort((a, b) => {
                 let ad = new Date(a.pubdate);
                 let bd = new Date(b.pubdate);
                 return bd.getTime() - ad.getTime();
             }).slice(0, Number(Symbol.keyFor(types.FEED_ITEM_PER_PAGE)));
-            return { menuItems: menu.items, rssItems: all };
-        });
+            localStorage.setItem('curUrl', null);
+            return { menuItems: exports.menu.items, rssItems };
+        }
+        catch (err) {
+            throw new Error(err);
+        }
     })),
 };
 exports.default = feedActions;
+
+
+/***/ }),
+
+/***/ "./app/ts/components/AddFeedDialog.tsx":
+/*!*********************************************!*\
+  !*** ./app/ts/components/AddFeedDialog.tsx ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
+let default_1 = class extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.onSubmit = (e) => {
+            const urlEl = this.urlEl;
+            e.preventDefault();
+            this.save(urlEl.inputRef.value);
+            this.close();
+        };
+        this.close = () => {
+            this.props.toggleOpenAddFeed(false);
+            this.formEl.reset();
+        };
+    }
+    save(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { addFeed, fetchMenu, setActiveFeed } = this.props;
+            let items = yield addFeed(url);
+            yield fetchMenu(items.payload.length - 1);
+            yield setActiveFeed(items.payload.slice(-1)[0].url);
+            if (!this.props.state.feedError) {
+                this.formEl.reset();
+            }
+        });
+    }
+    render() {
+        const { isOpenAddFeed } = this.props.state;
+        return (React.createElement("div", null,
+            React.createElement(react_mdl_1.Dialog, { open: isOpenAddFeed },
+                React.createElement(react_mdl_1.DialogTitle, null, "\u6DFB\u52A0 Feed"),
+                React.createElement(react_mdl_1.DialogContent, null,
+                    React.createElement("form", { onSubmit: this.onSubmit, ref: (el) => { this.formEl = el; } },
+                        React.createElement(react_mdl_1.Textfield, { label: "URL", required: true, floatingLabel: true, ref: (el) => { this.urlEl = el; } }))),
+                React.createElement(react_mdl_1.DialogActions, null,
+                    React.createElement(react_mdl_1.Button, { type: "button", onClick: this.onSubmit }, "\u4FDD\u5B58"),
+                    React.createElement(react_mdl_1.Button, { type: "button", onClick: this.close }, "\u53D6\u6D88")))));
+    }
+};
+default_1 = __decorate([
+    react_redux_1.connect(state => state, Object.assign({}, actions_1.default))
+], default_1);
+exports.default = default_1;
 
 
 /***/ }),
@@ -206,7 +296,6 @@ let default_1 = class extends React.Component {
     constructor() {
         super(...arguments);
         this.onClose = () => {
-            console.log(this.props);
             this.props.setFeedError("");
         };
     }
@@ -237,24 +326,71 @@ exports.default = default_1;
 
 "use strict";
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var Feed_1;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
+const electron_1 = __webpack_require__(/*! electron */ "electron");
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 // Component 属于泛型, 这里不需要 State Props 设置为空对象
 // Feed 组件
-class default_1 extends React.Component {
-    render() {
-        return (React.createElement("div", { className: "page-content feed-index" },
-            React.createElement("div", { className: "feed-list" },
-                React.createElement(react_mdl_1.Card, { shadow: 0, style: { width: "100%", height: "auto", margin: "auto" } },
-                    React.createElement(react_mdl_1.CardTitle, { expand: true, style: { color: "#fff", backgroundColor: "#46B6AC" } }, "Title"),
-                    React.createElement(react_mdl_1.CardText, null, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lobortis, mauris quis mollis porta"),
-                    React.createElement(react_mdl_1.CardActions, { border: true },
-                        React.createElement(react_mdl_1.Button, { colored: true }, "Open")))),
-            React.createElement("div", { className: "feed-contents" })));
+let Feed = Feed_1 = class Feed extends React.Component {
+    // Component 属于泛型, 这里不需要 State Props 设置为空对象
+    // Feed 组件
+    constructor() {
+        super(...arguments);
+        this.onOpenLink = (e) => {
+            const btn = e.target;
+            const url = btn.dataset.link;
+            e.preventDefault();
+            this.indexEl.classList.add('is-open');
+            this.webviewEl.src = url;
+        };
+        this.onCloseLink = () => {
+            this.indexEl.classList.remove('is-open');
+            this.webviewEl.src = 'blank';
+        };
     }
-}
-exports.default = default_1;
+    // 将 HTML 转换为 text
+    static converHTML(html) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || '';
+    }
+    componentDidMount() {
+        this.webviewEl = this.contentsEl.firstChild;
+        this.webviewEl.addEventListener('new-window', (e) => {
+            e.preventDefault();
+            electron_1.shell.openExternal(e.url);
+        });
+    }
+    render() {
+        const { items } = this.props.state;
+        return (React.createElement("div", { className: "page-content feed-index", ref: (el) => {
+                this.indexEl = el;
+            } },
+            React.createElement("div", { className: "feed-list" }, items.map((item, id) => {
+                return (React.createElement(react_mdl_1.Card, { key: id, shadow: 0, style: { width: "100%", height: "auto", margin: "auto" } },
+                    React.createElement(react_mdl_1.CardTitle, { expand: true, style: { color: "#fff", backgroundColor: "#46B6AC" } }, item.title),
+                    React.createElement(react_mdl_1.CardText, { onClick: this.onCloseLink }, item.description ? Feed_1.converHTML(item.description) : ''),
+                    React.createElement(react_mdl_1.CardActions, { border: true },
+                        React.createElement(react_mdl_1.Button, { colored: true, "data-link": item.link, onClick: this.onOpenLink }, "Open"))));
+            })),
+            React.createElement("div", { className: "feed-contents", ref: (el) => { this.contentsEl = el; }, dangerouslySetInnerHTML: {
+                    __html: `<webview class="feed-contents-src"></webview>`
+                } })));
+    }
+};
+Feed = Feed_1 = __decorate([
+    react_redux_1.connect(state => state, null)
+], Feed);
+exports.default = Feed;
 
 
 /***/ }),
@@ -268,29 +404,71 @@ exports.default = default_1;
 
 "use strict";
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var Menu_1;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
-// Component 属于泛型, 这里不需要 State Props 设置为空对象
+const AddFeedDialog_1 = __webpack_require__(/*! ./AddFeedDialog */ "./app/ts/components/AddFeedDialog.tsx");
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
+const actions_2 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
 // 侧边栏组件
-class default_1 extends React.Component {
+let Menu = Menu_1 = class Menu extends React.Component {
+    // 侧边栏组件
+    constructor() {
+        super(...arguments);
+        this.onAdd = () => {
+            this.props.toggleOpenAddFeed(true);
+        };
+        this.onRemove = () => {
+            const { setActiveFeed, fetchMenu, removeFeed, state } = this.props;
+            actions_2.menu.remove(state.activeFeedUrl);
+            removeFeed(state.activeFeedUrl);
+            fetchMenu(0);
+            setActiveFeed(actions_2.menu.items[0].url);
+        };
+        this.onRefresh = () => {
+            this.props.fetchMenu(actions_2.menu.items.findIndex(item => this.props.state.activeFeedUrl === item.url));
+        };
+        this.handleSwitch = (i) => {
+            this.props.fetchMenu(i);
+            this.props.setActiveFeed(actions_2.menu.items[i].url);
+        };
+    }
     render() {
+        const { state } = this.props;
+        const menu = state.menu || [];
         return (React.createElement(react_mdl_1.Drawer, { className: "mdl-color--blue-grey-900 mdl-color-text--blue-grey-50" },
-            React.createElement(react_mdl_1.Navigation, { className: "mdl-color--blue-grey-80" },
-                React.createElement("a", null,
+            React.createElement(AddFeedDialog_1.default, null),
+            React.createElement(react_mdl_1.Navigation, { className: "mdl-color--blue-grey-80" }, menu.map((item, index) => {
+                return (React.createElement("a", { key: item.id, href: `#${item.id}`, onClick: () => this.handleSwitch(index), className: Menu_1.getClassName(item.url === state.activeFeedUrl) },
                     React.createElement(react_mdl_1.Icon, { name: "autorenew" }),
-                    "Link title")),
+                    item.title));
+            })),
             React.createElement("div", { className: "mdl-layout-spacer" }),
             React.createElement("div", { className: "tools" },
-                React.createElement(react_mdl_1.FABButton, { mini: true },
+                React.createElement(react_mdl_1.FABButton, { mini: true, onClick: this.onAdd },
                     React.createElement(react_mdl_1.Icon, { name: "add" })),
-                React.createElement(react_mdl_1.FABButton, { mini: true },
+                React.createElement(react_mdl_1.FABButton, { mini: true, onClick: this.onRemove },
                     React.createElement(react_mdl_1.Icon, { name: "delete" })),
-                React.createElement(react_mdl_1.FABButton, { mini: true },
+                React.createElement(react_mdl_1.FABButton, { mini: true, onClick: this.onRefresh },
                     React.createElement(react_mdl_1.Icon, { name: "autorenew" })))));
     }
-}
-exports.default = default_1;
+};
+Menu.getClassName = (toggle) => {
+    const classList = ['mdl-navigation-link'];
+    return toggle ? classList.concat('mdl-navigation-link-cur').join(' ') : classList.join('');
+};
+Menu = Menu_1 = __decorate([
+    react_redux_1.connect(state => state, Object.assign({}, actions_1.default))
+], Menu);
+exports.default = Menu;
 
 
 /***/ }),
@@ -354,10 +532,11 @@ const Feed_1 = __webpack_require__(/*! ../components/Feed */ "./app/ts/component
 const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 const Error_1 = __webpack_require__(/*! ../components/Error */ "./app/ts/components/Error.tsx");
+const actions_2 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
 let default_1 = class extends React.Component {
     componentDidMount() {
-        this.props.fetchMenu();
-        this.props.setFeedError('something wrong');
+        this.props.fetchMenu(0);
+        this.props.setActiveFeed(actions_2.menu.items[0].url);
     }
     render() {
         return (React.createElement("div", { className: "main-wrapper" },
@@ -470,7 +649,7 @@ const app = redux_actions_1.handleActions({
         if (action.error) {
             return Object.assign({}, state, { feedError: `Cannot fetch menu: ${action.payload}` });
         }
-        return Object.assign({}, state, { menu: action.payload.menuItems, items: action.payload.rssItems, activeFeedUrl: "" });
+        return Object.assign({}, state, { menu: action.payload.menuItems, items: action.payload.rssItems });
     },
     [Symbol.keyFor(types.FETCH_FEED)]: (state, action) => {
         if (action.error) {
@@ -513,7 +692,7 @@ exports.default = reducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const sha1_1 = __webpack_require__(/*! sha1 */ "./node_modules/sha1/sha1.js");
+const sha1 = __webpack_require__(/*! sha1 */ "./node_modules/sha1/sha1.js");
 class Menu {
     constructor(ns) {
         this.ns = ns;
@@ -536,14 +715,14 @@ class Menu {
     }
     add(url, title) {
         // 根据 url 生成 id
-        const id = sha1_1.default(url);
+        const id = sha1(url);
         this.items.push({ id, url, title });
         this.save();
         return this.items;
     }
-    load() {
+    load(index) {
         this.items = JSON.parse(localStorage.getItem(this.ns) || '[]');
-        return this.items;
+        return this.items[index];
     }
 }
 exports.default = Menu;
@@ -560,14 +739,6 @@ exports.default = Menu;
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = __webpack_require__(/*! request */ "./node_modules/request/index.js");
 // 导入 FeedMe 并满足 TFeedMe 接口定义: new/on->title/on->item
@@ -608,15 +779,7 @@ function rss(url) {
     });
 }
 exports.default = rss;
-(() => __awaiter(this, void 0, void 0, function* () {
-    try {
-        let res = yield rss("https://www.oclc.org/content/marketing/publish/zh_cn/rss/metadata-feed.rss");
-        console.log(res);
-    }
-    catch (err) {
-        console.error(err.message);
-    }
-}))();
+// https://www.oclc.org/content/marketing/publish/zh_cn/rss/metadata-feed.rss
 
 
 /***/ }),
@@ -4433,7 +4596,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, ".main-wrapper {\n  height: 100vh; }\n  .main-wrapper .feed-index {\n    display: flex;\n    flex-flow: row nowrap;\n    overflow-y: auto;\n    height: calc(100vh - 66px); }\n    .main-wrapper .feed-index.is-open {\n      overflow-y: hidden; }\n      .main-wrapper .feed-index.is-open .feed-list {\n        width: 50%; }\n      .main-wrapper .feed-index.is-open .feed-contents {\n        width: 50%; }\n    .main-wrapper .feed-index .feed-list {\n      flex: 1 0 auto;\n      width: 100%;\n      transition: width 200ms ease; }\n    .main-wrapper .feed-index .feed-contents {\n      flex: 1 0 auto;\n      width: 0;\n      transition: width 200ms ease; }\n  .main-wrapper .tools {\n    height: 60px;\n    display: flex;\n    flex-flow: row nowrap;\n    justify-content: space-between; }\n", ""]);
+exports.push([module.i, ".main-wrapper {\n  height: 100vh; }\n  .main-wrapper .feed-index {\n    display: flex;\n    flex-flow: row nowrap;\n    overflow-y: auto;\n    height: calc(100vh - 66px); }\n    .main-wrapper .feed-index.is-open {\n      overflow-y: hidden; }\n      .main-wrapper .feed-index.is-open .feed-list {\n        width: 50%; }\n      .main-wrapper .feed-index.is-open .feed-contents {\n        width: 50%; }\n    .main-wrapper .feed-index .feed-list {\n      flex: 1 0 auto;\n      width: 100%;\n      transition: width 200ms ease; }\n    .main-wrapper .feed-index .feed-contents {\n      flex: 1 0 auto;\n      width: 0;\n      transition: width 200ms ease; }\n  .main-wrapper .tools {\n    height: 60px;\n    display: flex;\n    flex-flow: row nowrap;\n    justify-content: space-between; }\n  .main-wrapper .mdl-navigation-link-cur {\n    background: powderblue; }\n", ""]);
 
 // exports
 

@@ -16,5 +16,5 @@ export interface TMenu {
   // 添加菜单项
   add(url: string, title: string): Array<MenuItem>;
   // 初始化从 localStorage 加载
-  load(): Array<MenuItem>;
+  load(index: number): MenuItem;
 }

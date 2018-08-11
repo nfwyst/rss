@@ -43,11 +43,4 @@ export default function rss(url: string): Promise<Feed> {
   });
 }
 
-(async () => {
-  try {
-    let res: Feed = await rss("https://www.oclc.org/content/marketing/publish/zh_cn/rss/metadata-feed.rss");
-    console.log(res);
-  } catch (err) {
-    console.error(err.message);
-  }
-})();
+// https://www.oclc.org/content/marketing/publish/zh_cn/rss/metadata-feed.rss

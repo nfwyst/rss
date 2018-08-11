@@ -26,7 +26,7 @@ export interface TAppActions {
   toggleOpenAddFeed: (toggle: boolean) => Action<boolean>;
   setActiveFeed: (url: string) => Action<string>;
   setFeedError: (msg: string) => Action<string>;
-  fetchMenu: () => Promise<TMenuRssPayload>;
+  fetchMenu: (index: number) => Promise<TMenuRssPayload>;
   addFeed: (url: string) => Promise<Array<MenuItem>>;
   removeFeed: (url: string) => Promise<Array<MenuItem>>;
   fetchFeed: (url: string) => Promise<Feed>;

@@ -7,7 +7,7 @@ import { TMenuRssPayload } from "../interfaces/appState";
 import Menu from "../services/menu";
 import rss from "../services/rss";
 
-const menu = new Menu(Symbol.keyFor(types.MENU_STORAGE_NS));
+export const menu = new Menu(Symbol.keyFor(types.MENU_STORAGE_NS));
 
 // action creator 集合
 const feedActions = {
@@ -26,18 +26,31 @@ const feedActions = {
     (msg: string) => msg
   ),
 
-  removeFeed: createAction<Array<MenuItem>, string>(Symbol.keyFor(types.REMOVE_FEED), (url: string) =>
-    menu.remove(url)
+  removeFeed: createAction<Array<MenuItem>, string>(
+    Symbol.keyFor(types.REMOVE_FEED),
+    (url: string) => menu.remove(url)
   ),
 
   fetchFeed: createAction<Promise<Feed>, string>(
-    Symbol.keyFor(types.FETCH_FEED), async (url: string) => await rss(url)
+    Symbol.keyFor(types.FETCH_FEED),
+    async (url: string) => await rss(url)
   ),
 
   addFeed: createAction<Promise<MenuItem[]>, string>(
-    Symbol.keyFor(types.ADD_FEED), async (url: string) => {
-    if (menu.items.find(item => item.url === url)) {
-      throw new Error("This feed is already in the list");
+    Symbol.keyFor(types.ADD_FEED),
+    async (url: string) => {
+    // 如果已经添加了源, 则无需再次添加
+    if(menu.items.find(item => item.url === url)) {
+      return menu.items;
+    }
+    console.log(localStorage.getItem('curUrl'));
+    // 如果在异步执行结束之前多次添加则无效
+    if(!localStorage.getItem('curUrl')) {
+      localStorage.setItem('curUrl', url);
+    } else {
+      if(localStorage.getItem('curUrl') === url) {
+        return menu.items;
+      }
     }
     const feed = await rss(url);
     if (!feed.title) {
@@ -46,25 +59,28 @@ const feedActions = {
     return menu.add(url, feed.title);
   }),
 
-  fetchMenu: createAction<Promise<TMenuRssPayload>, void>(
+  fetchMenu: createAction<Promise<TMenuRssPayload>, number>(
     Symbol.keyFor(types.FETCH_MENU),
-    async () => {
-    menu.load();
-    // fetch rss => Promise[]
-    let promises = menu.items.map(item => rss(item.url));
-    return Promise.all(promises).then((feeds: Array<Feed>) => {
-      if (!feeds.length) {
+    async (index: number) => {
+    let curMenu = menu.load(index);
+    if (!curMenu || index < 0) return { menuItems: [], rssItems: [] };
+    console.log(index);
+    let feed = null;
+    try {
+      feed = await rss(curMenu.url);
+      if(!feed || !feed.items.length) {
         return { menuItems: [], rssItems: [] };
       }
-      let all = feeds.map(feed => feed.items)
-      .reduce(( acc: RssItem[], items: RssItem[] ) => acc.concat( items ) )
-      .sort((a, b) => {
+      let rssItems = feed.items.sort((a, b) => {
         let ad = new Date(a.pubdate);
         let bd = new Date(b.pubdate);
         return bd.getTime() - ad.getTime();
       }).slice(0, Number(Symbol.keyFor(types.FEED_ITEM_PER_PAGE)));
-      return { menuItems: menu.items , rssItems: all }
-    });
+      localStorage.setItem('curUrl', null);
+      return { menuItems: menu.items , rssItems }
+    } catch (err) {
+      throw new Error(err);
+    }
   }),
 }
 
