@@ -12,10 +12,13 @@ import thunkMiddleware from "redux-thunk";
 import promiseMiddleware from "redux-promise";
 import appReducers from './reducers/index';
 
-
-const store = createStore(appReducers, compose(
-  applyMiddleware(thunkMiddleware, promiseMiddleware)
-));
+const store = createStore(
+  appReducers,
+  compose(
+    applyMiddleware(thunkMiddleware, promiseMiddleware),
+    window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : i => i
+  )
+);
 
 ReactDOM.render(
   <Provider store={store}>

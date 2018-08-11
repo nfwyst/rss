@@ -7,6 +7,10 @@
     "outDir": "../dist/",
     "jsx": "react",
     "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "esnext"
+    ],
   },
   "files": [
     "./app/ts/index.tsx"

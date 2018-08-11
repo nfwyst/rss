@@ -2,7 +2,7 @@ const path = require('path');
 const url = require('url');
 const { BrowserWindow, app } = require('electron');
 const debuggers = require('electron-debug');
-const { REACT_DEVELOPER_TOOLS, default: install } = require('electron-devtools-installer');
+const { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, default: install } = require('electron-devtools-installer');
 
 debuggers();
 
@@ -12,6 +12,8 @@ app.on('ready', async () => {
   try {
     console.log(`devtools installing...`);
     let name =  await install(REACT_DEVELOPER_TOOLS);
+    console.log(`devtools ${name} installed`);
+    name = await install(REDUX_DEVTOOLS);
     console.log(`devtools ${name} installed`);
   } catch (err) {
     console.error(err.message);

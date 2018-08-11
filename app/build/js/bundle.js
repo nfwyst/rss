@@ -305,11 +305,10 @@ const Menu_1 = __webpack_require__(/*! ../components/Menu */ "./app/ts/component
 const Feed_1 = __webpack_require__(/*! ../components/Feed */ "./app/ts/components/Feed.tsx");
 const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-// Component 属于泛型, 这里不需要 State Props 设置为空对象
 let default_1 = class extends React.Component {
     componentDidMount() {
-        console.log(this.props);
         this.props.fetchMenu();
+        console.log(this.props);
     }
     render() {
         return (React.createElement("div", { className: "main-wrapper" },
@@ -374,7 +373,7 @@ const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.
 const redux_thunk_1 = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 const redux_promise_1 = __webpack_require__(/*! redux-promise */ "./node_modules/redux-promise/lib/index.js");
 const index_1 = __webpack_require__(/*! ./reducers/index */ "./app/ts/reducers/index.ts");
-const store = redux_1.createStore(index_1.default, redux_1.compose(redux_1.applyMiddleware(redux_thunk_1.default, redux_promise_1.default)));
+const store = redux_1.createStore(index_1.default, redux_1.compose(redux_1.applyMiddleware(redux_thunk_1.default, redux_promise_1.default), window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : i => i));
 ReactDOM.render(React.createElement(react_redux_1.Provider, { store: store },
     React.createElement(App_1.default, Object.assign({}, this.props))), document.getElementById("root"));
 

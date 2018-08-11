@@ -2,6 +2,10 @@ import { MenuItem } from "./menu";
 import { RssItem, Feed } from "./rss";
 import { Action } from 'redux-actions';
 
+// 为 redux 插件定义命名空间
+declare global {
+  interface Window { __REDUX_DEVTOOLS_EXTENSION__: any }
+}
 
 export interface TMenuRssPayload {
   menuItems: Array<MenuItem>;
