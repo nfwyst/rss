@@ -1,0 +1,10 @@
+export const TOGGLE_ADD_FEED = Symbol.for('TOGGLE_ADD_FEED');
+export const SET_ACTIVE_FEED = Symbol.for('SET_ACTIVE_FEED');
+export const FETCH_MENU = Symbol.for('FETCH_MENU');
+export const ADD_FEED = Symbol.for('ADD_FEED');
+export const SET_ADD_FEED_ERROR = Symbol.for('SET_ADD_FEED_ERROR');
+export const SET_FEED_ERROR = Symbol.for('SET_FEED_ERROR');
+export const FETCH_FEED = Symbol.for('FETCH_FEED');
+export const REMOVE_FEED = Symbol.for('REMOVE_FEED');
+export const MENU_STORAGE_NS = Symbol.for('MENU_STORAGE_NS');
+export const FEED_ITEM_PER_PAGE = Symbol.for('10');

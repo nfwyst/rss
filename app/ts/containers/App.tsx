@@ -4,9 +4,16 @@ import { Layout, Content } from 'react-mdl';
 import TitleBar from '../components/TitleBar';
 import Menu from '../components/Menu';
 import Feed from '../components/Feed';
+import actions from '../actions/actions';
+import { connect } from 'react-redux';
+import { TAppState, TAppActions } from '../interfaces/appState';
 
-// Component 属于泛型, 这里不需要 State Props 设置为空对象
-export default class extends React.Component<{}, {}> {
+@connect(state => state, { ...actions })
+export default class extends React.Component<{state: TAppState} & TAppActions, {}> {
+  componentDidMount() {
+    this.props.fetchMenu();
+    console.log(this.props);
+  }
   render() {
     return (
       <div className="main-wrapper">

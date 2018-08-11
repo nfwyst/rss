@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "sourceMap": false,
     "outDir": "../dist/",
-    "jsx": "react"
+    "jsx": "react",
+    "experimentalDecorators": true,
   },
   "files": [
     "./app/ts/index.tsx"
