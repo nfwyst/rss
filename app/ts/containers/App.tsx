@@ -7,16 +7,18 @@ import Feed from '../components/Feed';
 import actions from '../actions/actions';
 import { connect } from 'react-redux';
 import { TAppState, TAppActions } from '../interfaces/appState';
+import Error from '../components/Error';
 
 @connect(state => state, { ...actions })
 export default class extends React.Component<{state: TAppState} & TAppActions, {}> {
   componentDidMount() {
     this.props.fetchMenu();
-    console.log(this.props);
+    this.props.setFeedError('something wrong');
   }
   render() {
     return (
       <div className="main-wrapper">
+        <Error />
         <Layout fixedHeader fixedDrawer>
           {/* 头部导航 */}
           <TitleBar />

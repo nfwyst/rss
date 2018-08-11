@@ -180,6 +180,54 @@ exports.default = feedActions;
 
 /***/ }),
 
+/***/ "./app/ts/components/Error.tsx":
+/*!*************************************!*\
+  !*** ./app/ts/components/Error.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_mdl_1 = __webpack_require__(/*! react-mdl */ "./node_modules/react-mdl/lib/index.js");
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
+// state 由 connect map to props
+let default_1 = class extends React.Component {
+    // state 由 connect map to props
+    constructor() {
+        super(...arguments);
+        this.onClose = () => {
+            console.log(this.props);
+            this.props.setFeedError("");
+        };
+    }
+    render() {
+        const { feedError } = this.props.state;
+        return (React.createElement(react_mdl_1.Dialog, { open: Boolean(feedError) },
+            React.createElement(react_mdl_1.DialogTitle, null, "\u51FA\u9519\u4E86"),
+            React.createElement(react_mdl_1.DialogContent, null,
+                React.createElement("p", null, feedError)),
+            React.createElement(react_mdl_1.DialogActions, null,
+                React.createElement(react_mdl_1.Button, { type: "button", onClick: this.onClose }, "\u5173\u95ED"))));
+    }
+};
+default_1 = __decorate([
+    react_redux_1.connect(state => state, { setFeedError: actions_1.default.setFeedError })
+], default_1);
+exports.default = default_1;
+
+
+/***/ }),
+
 /***/ "./app/ts/components/Feed.tsx":
 /*!************************************!*\
   !*** ./app/ts/components/Feed.tsx ***!
@@ -305,13 +353,15 @@ const Menu_1 = __webpack_require__(/*! ../components/Menu */ "./app/ts/component
 const Feed_1 = __webpack_require__(/*! ../components/Feed */ "./app/ts/components/Feed.tsx");
 const actions_1 = __webpack_require__(/*! ../actions/actions */ "./app/ts/actions/actions.ts");
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const Error_1 = __webpack_require__(/*! ../components/Error */ "./app/ts/components/Error.tsx");
 let default_1 = class extends React.Component {
     componentDidMount() {
         this.props.fetchMenu();
-        console.log(this.props);
+        this.props.setFeedError('something wrong');
     }
     render() {
         return (React.createElement("div", { className: "main-wrapper" },
+            React.createElement(Error_1.default, null),
             React.createElement(react_mdl_1.Layout, { fixedHeader: true, fixedDrawer: true },
                 React.createElement(TitleBar_1.default, null),
                 React.createElement(Menu_1.default, null),

@@ -46,7 +46,7 @@ const feedActions = {
     return menu.add(url, feed.title);
   }),
 
-  fetchMenu: createAction<Promise<TMenuRssPayload>>(
+  fetchMenu: createAction<Promise<TMenuRssPayload>, void>(
     Symbol.keyFor(types.FETCH_MENU),
     async () => {
     menu.load();
